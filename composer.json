@@ -1,0 +1,17 @@
+{
+    "name": "karion/finite",
+    "description": "May Finite State Machine Test",
+    "require": {
+        "slim/slim": "^3.3",
+        "yohang/finite": "^1.1",
+        "doctrine/dbal": "^2.5",
+        "symfony/event-dispatcher": "^3.0",
+        "slim/twig-view": "^2.1"
+    },
+    "authors": [
+        {
+            "name": "Tomasz Szymczyk",
+            "email": "karion.ubuntu@gmail.com"
+        }
+    ]
+}
