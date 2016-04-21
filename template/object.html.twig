@@ -1,0 +1,14 @@
+{% extends "layout.html.twig" %}
+
+{% block body %}
+<h1>Object {{object.name}}</h1>
+
+<a href="{{ path_for('object_list') }}">Back to list</a>
+<dl>
+  <dt>id</dt><dd>{{ object.id }}</dd>
+  <dt>name</dt><dd>{{ object.name }}</dd>
+  <dt>status</dt><dd>{{ object.state }}</dd>
+  <dt>id</dt><dd>{{ object.lastChange | date("d-m-Y H:i:s") }}</dd>
+  
+</dl>
+{% endblock %}

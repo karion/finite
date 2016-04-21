@@ -1,0 +1,41 @@
+{% extends "layout.html.twig" %}
+
+
+{% block body %}
+<h1>Object List</h1>
+
+<div>
+    <h3>Add new</h3>
+    
+    <form action="{{ path_for('object_new') }}" method="POST">
+        Name:
+        <input type="text" name="name" value="" required="required">
+        <input type="submit" value="Add new">
+    </form>
+</div>
+        
+<br>
+<table>
+    <thead>
+        <tr>
+            <th>id</th>
+            <th>name</th>
+            <th>status</th>
+            <th>last change</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for obj in objects %}
+            <tr>
+                <td>{{ obj.id }}</td>
+                <td><a href="{{ path_for('object', { 'id': obj.id }) }}">{{ obj.name }}</a></td>
+                <td>{{ obj.state }}</td>
+                <td>{{ obj.lastChange|date("d-m-Y H:i:s") }}</td>
+            </tr>
+                
+        {% endfor %}
+        
+    </tbody>
+        
+</table>
+{% endblock %}

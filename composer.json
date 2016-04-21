@@ -8,6 +8,11 @@
         "symfony/event-dispatcher": "^3.0",
         "slim/twig-view": "^2.1"
     },
+    "autoload": {
+        "psr-4": {
+            "": "src/"
+        }
+    },
     "authors": [
         {
             "name": "Tomasz Szymczyk",

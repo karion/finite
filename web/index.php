@@ -1,53 +1,64 @@
 <?php
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
+
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\App;
 
 require __DIR__.'/../vendor/autoload.php';
 
 
 $config = require __DIR__.'/../config/config.php';
 
-$app = new \Slim\App(['settings' => $config]);
+$app = new App(['settings' => $config]);
 
 //$app
-$container = $app->getContainer();
+require __DIR__.'/../config/dependency.php';
 
-$container['db'] = function($container) {
-    $configuration = new \Doctrine\DBAL\Configuration();
-    $config = $container['settings']['db'];
+$app->get('/object', function (Request $request, Response $response) {
 
-    $path = realpath(__DIR__ . DIRECTORY_SEPARATOR . $config['path']);
-//    $connectionParams = [
-//        'url' => 'sqlite:///'.$path
-//    ];
+    $objectRepo = $this->get('object_repo');
+    
+    $objects = $objectRepo->findAll();
+    
+    
+    return $this->view->render($response, 'list.html.twig', [
+        'objects' => $objects
+    ]);
+    
+})->setName('object_list');
 
-    $connectionParams = array(
-    'path' => $path,
-    'user' => 'user',
-    'password' => 'secret',
+$app->post('/object', function (Request $request, Response $response) {
 
-    'driver' => 'pdo_sqlite',
-);
+    $post = $request->getParsedBody();
+    
+    $object = new karion\Finite\Entity\Object();
+    $object->setName(filter_var($post['name'], FILTER_SANITIZE_STRING));
+    
+    $objectRepo = $this->get('object_repo');
+    $object = $objectRepo->save($object);
+    
+    $router = $this->router;
+    return $response->withRedirect($router->pathFor('object', ['id' => $object->getId()]));
+    
+})->setName('object_new');;
 
-    return \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $configuration);
-};
+$app->get('/object/{id}', function (Request $request, Response $response, $args) {
+
+    $id = $args['id'];
+    
+    $objectRepo = $this->get('object_repo');
+    
+    $object = $objectRepo->findById($id);
+    
+    if (!$object) {
+        throw new Slim\Exception\NotFoundException($request, $response);
+    }
+    
+
+    return $this->view->render($response, 'object.html.twig', [
+        'object' => $object
+    ]);
+})->setName('object');;
 
 
-
-
-$app->get('/a', function (Request $request, Response $response) {
-
-    $db = $this->get('db');
-//    $statement = $db->prepare('Select 1');
-    $statement = $db->prepare('SELECT * FROM object');
-    $statement->execute();
-    $objects = $statement->fetchAll();
-
-    echo "<pre>";
-    var_dump($objects);
-    die();
-    $response->getBody()->write("Hello, $name");
-
-    return $response;
-});
 $app->run();
