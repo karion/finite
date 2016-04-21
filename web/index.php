@@ -53,12 +53,55 @@ $app->get('/object/{id}', function (Request $request, Response $response, $args)
     if (!$object) {
         throw new Slim\Exception\NotFoundException($request, $response);
     }
-    
+
+    $stateMachine = $this->get('state_machine');
+
+    /* @var $stateMachine Finite\StateMachine\StateMachine */
+    $stateMachine->setObject($object);
+    $stateMachine->initialize();
+
+    $transitions = $stateMachine->getCurrentState()->getTransitions();
 
     return $this->view->render($response, 'object.html.twig', [
-        'object' => $object
+        'object' => $object,
+        'transitions' => $transitions
     ]);
-})->setName('object');;
+})->setName('object');
 
+
+$app->get('/object/{id}/{transition}', function (Request $request, Response $response, $args) {
+    $id = $args['id'];
+    $transition = $args['transition'];
+    
+    $objectRepo = $this->get('object_repo');
+    
+    $object = $objectRepo->findById($id);
+    
+    if (!$object) {
+        throw new Slim\Exception\NotFoundException($request, $response);
+    }
+    
+    $stateMachine = $this->get('state_machine');
+
+    
+    /* @var $stateMachine Finite\StateMachine\StateMachine */
+    $stateMachine->setObject($object);
+    
+    $stateMachine->initialize();
+    
+    try {
+        $stateMachine->apply($transition);
+    } catch (\Finite\Exception\StateException $e) {
+        echo $e->getMessage();
+        die();
+    }
+    
+    $objectRepo->save($object);
+    
+    $router = $this->router;
+    
+    return $response->withRedirect($router->pathFor('object', ['id' => $object->getId()]));
+    
+})->setName('object_transition');
 
 $app->run();

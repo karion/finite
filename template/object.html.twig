@@ -4,11 +4,28 @@
 <h1>Object {{object.name}}</h1>
 
 <a href="{{ path_for('object_list') }}">Back to list</a>
+
+<br>
+
 <dl>
   <dt>id</dt><dd>{{ object.id }}</dd>
   <dt>name</dt><dd>{{ object.name }}</dd>
   <dt>status</dt><dd>{{ object.state }}</dd>
-  <dt>id</dt><dd>{{ object.lastChange | date("d-m-Y H:i:s") }}</dd>
+  <dt>lastChange</dt><dd>{{ object.lastChange | date("d-m-Y H:i:s") }}</dd>
   
 </dl>
+  
+<br>
+
+
+<div>
+    <h2>Transitions</h2>
+    <ul>
+        {% for transition in transitions %}
+            <li><a href="{{ path_for('object_transition', {'id': object.id, 'transition': transition}) }}">{{ transition }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+        
+        
 {% endblock %}

@@ -74,11 +74,11 @@ class ObjectRepository
     protected function update(Object $object)
     {
         $array = $object->toArray();
-        $id = $array['id'];
+        
         
         unset($array['id']);
         
-        $this->db->update('object', $array, ['id' => $id]);
+        $this->db->update('object', $array, ['id' => $object->getId()]);
         
         return $object;
     }

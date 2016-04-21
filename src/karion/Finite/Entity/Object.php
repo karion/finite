@@ -2,14 +2,18 @@
 
 namespace karion\Finite\Entity;
 
-class Object
+use DateTime;
+use Finite\StatefulInterface;
+use InvalidArgumentException;
+
+class Object implements StatefulInterface
 {
     protected $id;
     protected $name;
     protected $state;
     /**
      *
-     * @var \DateTime
+     * @var DateTime
      */
     protected $lastChange;
     
@@ -33,13 +37,13 @@ class Object
             }
             
             if (array_key_exists('last_change', $input)) {
-                $this->setLastChange(new \DateTime("@".$input['last_change']));
+                $this->lastChange = new DateTime("@".$input['last_change']);
             }
             return $this;
         }
         
         $this->state = 'start';
-        $this->lastChange = new \DateTime;
+        $this->lastChange = new DateTime;
         return $this;
     }
     
@@ -66,26 +70,43 @@ class Object
     function setId($id)
     {
         $this->id = $id;
+        $this->lastChange = new DateTime;
     }
 
     function setName($name)
     {
         $this->name = $name;
+        $this->lastChange = new DateTime;
     }
 
     function setState($state)
     {
         if (!in_array(strtolower($state), $this->states)) {
-            throw new \InvalidArgumentException('Unknow state');
+            throw new InvalidArgumentException('Unknow state');
         }
         $this->state = $state;
+        $this->lastChange = new DateTime;
     }
 
-    function setLastChange(\DateTime $lastChange)
+//    function setLastChange(DateTime $lastChange)
+//    {
+//        $this->lastChange = $lastChange;
+//    }
+    
+    function getFiniteState()
     {
-        $this->lastChange = $lastChange;
+        return $this->state;
     }
-
+    
+    public function setFiniteState($state)
+    {
+        if (!in_array(strtolower($state), $this->states)) {
+            throw new InvalidArgumentException('Unknow state');
+        }
+        $this->state = $state;
+        $this->lastChange = new DateTime;
+    }
+            
     function toArray()
     {
         return [
