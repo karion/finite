@@ -21,7 +21,7 @@ class Object implements StatefulInterface
         'start',
         'correct',
         'wrong',
-        'fillled',
+        'filled',
         'done',
         'rejected'
     ];
