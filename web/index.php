@@ -37,6 +37,13 @@ $app->post('/object', function (Request $request, Response $response) {
     $objectRepo = $this->get('object_repo');
     $object = $objectRepo->save($object);
     
+    $objectLog = new karion\Finite\Entity\ObjectLog([
+        'object_id' => $object->getId(),
+        'become' => $object->getState()
+    ]);
+    $this->get('object_log_repo')->add($objectLog);
+    
+    
     $router = $this->router;
     return $response->withRedirect($router->pathFor('object', ['id' => $object->getId()]));
     
@@ -62,9 +69,13 @@ $app->get('/object/{id}', function (Request $request, Response $response, $args)
 
     $transitions = $stateMachine->getCurrentState()->getTransitions();
 
+    $logRepo = $this->get('object_log_repo');
+    $logs = $logRepo->findByObjectId($object->getId());
+    
     return $this->view->render($response, 'object.html.twig', [
         'object' => $object,
-        'transitions' => $transitions
+        'transitions' => $transitions,
+        'logs' => $logs
     ]);
 })->setName('object');
 

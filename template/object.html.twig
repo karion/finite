@@ -23,9 +23,22 @@
     <ul>
         {% for transition in transitions %}
             <li><a href="{{ path_for('object_transition', {'id': object.id, 'transition': transition}) }}">{{ transition }}</a></li>
+        {% else %}            
+            <li>No transactions enable</li>
         {% endfor %}
     </ul>
 </div>
-        
+   
+    <br>
+
+
+<div>
+    <h2>History</h2>
+    <ul>
+        {% for log in logs %}
+            <li>{{ log.date | date("d-m-Y H:i:s")}} {{log.become }}</li>
+        {% endfor %}
+    </ul>
+</div>
         
 {% endblock %}
